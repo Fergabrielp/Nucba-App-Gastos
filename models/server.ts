@@ -1,5 +1,7 @@
 import express, { Express } from "express";
 import { connectDB } from "../db/config";
+import authRoute from "../routes/auth";
+import userRoute from "../routes/user";
 
 export class Server {
   app: Express;
@@ -10,6 +12,7 @@ export class Server {
     this.port = process.env.PORT;
     this.connectToDB();
     this.middlewares();
+    this.routes();
   }
 
   async connectToDB(): Promise<void> {
@@ -17,7 +20,12 @@ export class Server {
   }
 
   middlewares(): void {
-    this.app.use(express.json);
+    this.app.use(express.json());
+  }
+
+  routes(): void {
+    this.app.use("/auth", authRoute);
+    this.app.use("/", userRoute);
   }
 
   listen(): void {

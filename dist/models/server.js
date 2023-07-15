@@ -15,12 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const express_1 = __importDefault(require("express"));
 const config_1 = require("../db/config");
+const auth_1 = __importDefault(require("../routes/auth"));
+const user_1 = __importDefault(require("../routes/user"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
         this.port = process.env.PORT;
         this.connectToDB();
         this.middlewares();
+        this.routes();
     }
     connectToDB() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -28,7 +31,11 @@ class Server {
         });
     }
     middlewares() {
-        this.app.use(express_1.default.json);
+        this.app.use(express_1.default.json());
+    }
+    routes() {
+        this.app.use("/auth", auth_1.default);
+        this.app.use("/", user_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {
