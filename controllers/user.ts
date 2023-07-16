@@ -1,8 +1,81 @@
 import { Request, Response } from "express";
-import User, { IUser } from "../models/user";
+import {
+  createUser,
+  deleteOneUser,
+  getAllUsers,
+  getOneUser,
+  updateOneUser,
+  createOneExpense,
+} from "../services/user";
+import Expense from "../models/expense";
 
-export const getUser = async ({}, res: Response) => {
-  const users: IUser[] = await User.find();
+export const postUser = async (req: Request, res: Response) => {
+  try {
+    const dataUser = req.body;
+    const newUser = await createUser(dataUser);
+    res.status(201).json({ msg: "User succesfuly created", newUser });
+  } catch (error) {
+    res.status(500).json({ msg: "Error creating a new user", error });
+  }
+};
 
-  res.status(200).json({ msg: "User succesfuly created", users });
+export const getArrayUsers = async ({}, res: Response) => {
+  try {
+    const usersArray = await getAllUsers();
+    res.status(200).json({ msg: "Users Array: ", usersArray });
+  } catch (error) {
+    res.status(500).json({ msg: "Error finding users in database", error });
+  }
+};
+
+export const getUserById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userFound = await getOneUser(id);
+    res.status(200).json({ msg: "User found:", userFound });
+  } catch (error) {
+    res.status(500).json({ msg: "Error finding a new user", error });
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const dataToUpdate = req.body;
+    const userUpdated = await updateOneUser(id, dataToUpdate);
+    res.status(200).json({ msg: "User Updated:", userUpdated });
+  } catch (error) {
+    res.status(500).json({ msg: "Error updating a user", error });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userDeleted = await deleteOneUser(id);
+    res.status(200).json({ msg: "User deleted:", userDeleted });
+  } catch (error) {
+    res.status(500).json({ msg: "Error deleting an user", error });
+  }
+};
+
+export const createExpense = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const dataExpense = req.body;
+    const newExpense = await createOneExpense(id, dataExpense);
+    res.status(201).json({ msg: "Expense succesfuly created", newExpense });
+  } catch (error) {
+    res.status(500).json({ msg: "Error creating a new expense", error });
+  }
+};
+
+export const geExpenseByUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const gastos = await Expense.find({ user: id }).populate("user");
+    res.json(gastos);
+  } catch (error) {
+    res.status(500).json({ error: "Error al obtener los gastos del usuario" });
+  }
 };

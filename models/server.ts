@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import { connectDB } from "../db/config";
-import authRoute from "../routes/auth";
 import userRoute from "../routes/user";
+import userExpense from "../routes/expense";
 
 export class Server {
   app: Express;
@@ -24,8 +24,8 @@ export class Server {
   }
 
   routes(): void {
-    this.app.use("/auth", authRoute);
-    this.app.use("/", userRoute);
+    this.app.use("/user", userRoute);
+    this.app.use("/expense", userExpense);
   }
 
   listen(): void {
