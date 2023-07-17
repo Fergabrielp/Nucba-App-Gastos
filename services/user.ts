@@ -1,4 +1,3 @@
-import Expense, { IExpense } from "../models/expense";
 import User, { IUser } from "../models/user";
 
 export const createUser = async (user: IUser) => {
@@ -8,32 +7,38 @@ export const createUser = async (user: IUser) => {
 
 export const getAllUsers = async () => {
   const users = await User.find({});
-  return users;
+  if (users.length) {
+    return users;
+  } else {
+    throw new Error("No users created in database");
+  }
 };
 
 export const getOneUser = async (id: string) => {
   const userFound = await User.findOne({ _id: id });
-  return userFound;
+  if (userFound) {
+    return userFound;
+  } else {
+    throw new Error(`User not found with id: ${id}`);
+  }
 };
 
 export const updateOneUser = async (id: string, dataToUpdate: IUser) => {
   const userUpdated = await User.findOneAndUpdate({ _id: id }, dataToUpdate, {
     new: true,
   });
-  return userUpdated;
+  if (userUpdated) {
+    return userUpdated;
+  } else {
+    throw new Error(`User not found with id: ${id}`);
+  }
 };
 
 export const deleteOneUser = async (id: string) => {
   const userDeleted = await User.findOneAndDelete({ _id: id });
-  return userDeleted;
-};
-
-export const createOneExpense = async (id: string, expense: IExpense) => {
-  const userFound = await getOneUser(id);
-  if (userFound) {
-    const newExpense = await Expense.create({ ...expense, user: id });
-    return newExpense;
+  if (userDeleted) {
+    return userDeleted;
   } else {
-    throw new Error("User not found");
+    throw new Error(`User not found with id: ${id}`);
   }
 };

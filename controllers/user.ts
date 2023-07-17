@@ -5,9 +5,7 @@ import {
   getAllUsers,
   getOneUser,
   updateOneUser,
-  createOneExpense,
 } from "../services/user";
-import Expense from "../models/expense";
 
 export const postUser = async (req: Request, res: Response) => {
   try {
@@ -56,26 +54,5 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(200).json({ msg: "User deleted:", userDeleted });
   } catch (error) {
     res.status(500).json({ msg: "Error deleting an user", error });
-  }
-};
-
-export const createExpense = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const dataExpense = req.body;
-    const newExpense = await createOneExpense(id, dataExpense);
-    res.status(201).json({ msg: "Expense succesfuly created", newExpense });
-  } catch (error) {
-    res.status(500).json({ msg: "Error creating a new expense", error });
-  }
-};
-
-export const geExpenseByUser = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const gastos = await Expense.find({ user: id }).populate("user");
-    res.json(gastos);
-  } catch (error) {
-    res.status(500).json({ error: "Error al obtener los gastos del usuario" });
   }
 };

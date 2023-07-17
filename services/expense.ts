@@ -1,19 +1,22 @@
 import Expense, { IExpense } from "../models/expense";
-import User, { IUser } from "../models/user";
+import User from "../models/user";
 
 export const createOneExpense = async (id: string, expense: IExpense) => {
   const userFound = await User.findById(id);
-  if (userFound) {
-    const newExpense = await Expense.create({ ...expense, user: id });
-    return newExpense;
-  } else {
-    throw new Error("Expense not found");
+  if (!userFound) {
+    throw new Error(`User not found with id: ${id}`);
   }
+  const newExpense = await Expense.create({ ...expense, user: id });
+  return newExpense;
 };
 
 export const getAllExpenses = async () => {
   const expenses = await Expense.find({}).populate("user", "name");
-  return expenses;
+  if (expenses.length) {
+    return expenses;
+  } else {
+    throw new Error("No expenses created in database");
+  }
 };
 
 export const getOneExpense = async (id: string) => {
@@ -21,7 +24,11 @@ export const getOneExpense = async (id: string) => {
     "user",
     "name"
   );
-  return expenseFound;
+  if (expenseFound) {
+    return expenseFound;
+  } else {
+    throw new Error(`Expense not found with id: ${id}`);
+  }
 };
 
 export const updateOneExpense = async (id: string, dataToUpdate: IExpense) => {
@@ -32,10 +39,18 @@ export const updateOneExpense = async (id: string, dataToUpdate: IExpense) => {
       new: true,
     }
   );
-  return expenseUpdated;
+  if (expenseUpdated) {
+    return expenseUpdated;
+  } else {
+    throw new Error(`Expense not found with id: ${id}`);
+  }
 };
 
 export const deleteOneExpense = async (id: string) => {
   const expenseDeleted = await Expense.findOneAndDelete({ _id: id });
-  return expenseDeleted;
+  if (expenseDeleted) {
+    return expenseDeleted;
+  } else {
+    throw new Error(`Expense not found with id: ${id}`);
+  }
 };
